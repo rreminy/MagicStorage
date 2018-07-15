@@ -1,3 +1,12 @@
+====
+NOTE: This version is patched by AzureGem (rreminy) to apply patches from brianide, uwx and mixels. The patches are the following:
+- brianide: Added smart cursor interaction flag.
+- brianide: Added item and recipe OnCraft hooks.
+- uwx: Additional station slots.
+- mixels: Fixes search capitalization bug.
+Version upped to 0.4.3.2
+====
+
 Are you tired of having a mess of chests in your base? Never remember where you put your items, and have to run across your entire house to get from chest to chest? This mod will solve all of your problems!
 
 This mod offers a solution to storage problems once and for all. It allows you to construct a central network to store all your items, that you can access from one single block. If desired, you can even set up multiple access points to use your storage from anywhere in the world. You can search your storage for items with a certain name, filter by item types, etc. The magic storage can even craft items for you!
