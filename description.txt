@@ -1,10 +1,12 @@
 ====
-NOTE: This version is patched by AzureGem (rreminy) to apply patches from brianide, uwx and mixels. The patches are the following:
+NOTE: This version is patched by AzureGem (rreminy) to apply patches from brianide, uwx, mixels and my own. The patches are the following:
 - brianide: Added smart cursor interaction flag.
 - brianide: Added item and recipe OnCraft hooks.
-- uwx: Additional station slots.
-- mixels: Fixes search capitalization bug.
-Version upped to 0.4.3.2
+- uwx: Additional station slots. (total 15 slots)
+- mixels: Fixes search capitalization bug, searches are now case insensitive.
+- rreminy: 5 additional station slots and modified the GUI to fit all 20 slots.
+- rreminy: Fxed 2 array out of bounds errors, allowing MS to be updated in place without starting a new world. (Warning: downgrading will make you lose the additional station slots irrecoverably)
+- rreminy: Version downed to 0.0.0.1 (I mistakenly upped it to 0.4.3.2 previously, I don't want this to conflict with future releases)
 ====
 
 Are you tired of having a mess of chests in your base? Never remember where you put your items, and have to run across your entire house to get from chest to chest? This mod will solve all of your problems!

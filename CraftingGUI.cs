@@ -198,16 +198,16 @@ namespace MagicStorage
 
 			stationZone.Width.Set(0f, 1f);
 			stationZone.Top.Set(100f, 0f);
-			stationZone.Height.Set(70f, 0f);
-			stationZone.SetDimensions(HansenMSHolder.NumStationSlots, 1, -10);
+			stationZone.Height.Set(70f + 49f, 0f);
+			stationZone.SetDimensions(10, 2);
 			basePanel.Append(stationZone);
 
-			recipeText.Top.Set(152f, 0f);
+			recipeText.Top.Set(152f + 49f, 0f);
 			basePanel.Append(recipeText);
 
 			recipeZone.Width.Set(0f, 1f);
-			recipeZone.Top.Set(176f, 0f);
-			recipeZone.Height.Set(-216f, 1f);
+			recipeZone.Top.Set(176f + 49f, 0f);
+			recipeZone.Height.Set(-216f - 49f, 1f);
 			basePanel.Append(recipeZone);
 
 			numRows = (recipes.Count + numColumns - 1) / numColumns;

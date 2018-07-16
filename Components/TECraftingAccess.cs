@@ -13,7 +13,7 @@ namespace MagicStorage.Components
 {
 	public static class HansenMSHolder
 	{
-		public const int NumStationSlots = 15;
+		public const int NumStationSlots = 20;
 	}
 	
 	public class TECraftingAccess : TEStorageComponent
@@ -22,7 +22,7 @@ namespace MagicStorage.Components
 
 		public TECraftingAccess()
 		{
-			for (int k = 0; k < HansenMSHolder.NumStationSlots; k++)
+			for (int k = 0; k < stations.Length; k++)
 			{
 				stations[k] = new Item();
 			}
@@ -135,7 +135,7 @@ namespace MagicStorage.Components
 			IList<TagCompound> listStations = tag.GetList<TagCompound>("Stations");
 			if (listStations != null && listStations.Count > 0)
 			{
-				for (int k = 0; k < stations.Length; k++)
+				for (int k = 0; (k < stations.Length) && (k < listStations.Count); k++)
 				{
 					stations[k] = ItemIO.Load(listStations[k]);
 				}
