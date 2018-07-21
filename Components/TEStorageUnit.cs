@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Threading;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -381,8 +382,15 @@ namespace MagicStorage.Components
 			}
 		}
 
-		public override void NetSend(BinaryWriter writer, bool lightSend)
+		public override void NetSend(BinaryWriter trueWriter, bool lightSend)
 		{
+			/* Recreate a BinaryWriter writer */
+			MemoryStream buffer = new MemoryStream(65536);
+			DeflateStream compressor = new DeflateStream(buffer, CompressionMode.Compress, true);
+			BufferedStream writerBuffer = new BufferedStream(compressor, 65536);
+			BinaryWriter writer = new BinaryWriter(writerBuffer);
+
+			/* Original code */
 			base.NetSend(writer, lightSend);
 			if (netQueue.Count > Capacity / 2 || !lightSend)
 			{
@@ -394,10 +402,55 @@ namespace MagicStorage.Components
 			{
 				netQueue.Dequeue().Send(writer, this);
 			}
+			
+			/* Forces data to be flushed into the compressed buffer */
+			writerBuffer.Flush(); compressor.Close();
+
+			/* Sends the buffer through the network */
+			buffer.Position = 0;
+			byte[] data = buffer.ToArray();
+
+			int count = data.Length;
+			trueWriter.Write((ushort)count);
+			for (int i = 0; i < count; i++)
+			{
+				trueWriter.Write(data[i]);
+			}
+
+			/* Compression stats and debugging code (server side) */
+			if (false)
+			{
+				MemoryStream decompressedBuffer = new MemoryStream(65536);
+				DeflateStream decompressor = new DeflateStream(buffer, CompressionMode.Decompress, true);
+				decompressor.CopyTo(decompressedBuffer);
+				decompressor.Close(); 
+
+				Console.WriteLine("Magic Storage Data Compression Stats: " + decompressedBuffer.Length + " => " + buffer.Length);
+				decompressor.Dispose(); decompressedBuffer.Dispose();
+			}
+
+			/* Dispose all objects */
+			writer.Dispose(); writerBuffer.Dispose(); compressor.Dispose(); buffer.Dispose();
 		}
 
-		public override void NetReceive(BinaryReader reader, bool lightReceive)
+		public override void NetReceive(BinaryReader trueReader, bool lightReceive)
 		{
+			/* Reads the buffer off the network */
+			MemoryStream buffer = new MemoryStream(65536);
+			BinaryWriter bufferWriter = new BinaryWriter(buffer);
+
+			int count = trueReader.ReadUInt16();
+			for (int i = 0; i < count; i++)
+			{
+				bufferWriter.Write(trueReader.ReadByte());
+			}
+			buffer.Position = 0;
+
+			/* Recreate the BinaryReader reader */
+			DeflateStream decompressor = new DeflateStream(buffer, CompressionMode.Decompress, true);
+			BinaryReader reader = new BinaryReader(decompressor);
+
+			/* Original code */
 			base.NetReceive(reader, lightReceive);
 			if (TileEntity.ByPosition.ContainsKey(Position) && TileEntity.ByPosition[Position] is TEStorageUnit)
 			{
@@ -407,7 +460,7 @@ namespace MagicStorage.Components
 				hasItem = other.hasItem;
 			}
 			receiving = true;
-			int count = reader.ReadUInt16();
+			/* int */ count = reader.ReadUInt16();
 			bool flag = false;
 			for (int k = 0; k < count; k++)
 			{
@@ -421,6 +474,9 @@ namespace MagicStorage.Components
 				RepairMetadata();
 			}
 			receiving = false;
+			
+			/* Dispose all objects */
+			reader.Dispose(); decompressor.Dispose(); bufferWriter.Dispose(); buffer.Dispose();
 		}
 
 		private void ClearItemsData()
